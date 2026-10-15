@@ -1,0 +1,24 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://agentfit.local/profile.v1.json",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["project_name", "project_type", "domain", "frontend", "backend", "ai", "database", "deployment", "features", "external_integrations"],
+  "properties": {
+    "project_name": { "$ref": "#/definitions/scalar" },
+    "project_type": { "$ref": "#/definitions/scalar" },
+    "domain": { "$ref": "#/definitions/scalar" },
+    "frontend": { "$ref": "#/definitions/array" },
+    "backend": { "$ref": "#/definitions/array" },
+    "ai": { "$ref": "#/definitions/array" },
+    "database": { "$ref": "#/definitions/scalar" },
+    "deployment": { "$ref": "#/definitions/scalar" },
+    "features": { "$ref": "#/definitions/features" },
+    "external_integrations": { "$ref": "#/definitions/array" }
+  },
+  "definitions": {
+    "scalar": { "anyOf": [{ "type": "string", "minLength": 1, "maxLength": 200 }, { "type": "null" }] },
+    "features": { "anyOf": [{ "type": "array", "maxItems": 100, "items": { "type": "string", "minLength": 1, "maxLength": 200 } }, { "type": "null" }] },
+    "array": { "anyOf": [{ "type": "array", "maxItems": 30, "items": { "type": "string", "minLength": 1, "maxLength": 200 } }, { "type": "null" }] }
+  }
+}

@@ -1,0 +1,16 @@
+{
+  "caseId": "semantic-03",
+  "text": "검증 문서 SEM03\n프론트엔드: React는 후보입니다.",
+  "expected": {
+    "project_name": null,
+    "project_type": null,
+    "domain": null,
+    "frontend": null,
+    "backend": null,
+    "ai": null,
+    "database": null,
+    "deployment": null,
+    "features": null,
+    "external_integrations": null
+  }
+}

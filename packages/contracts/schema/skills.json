@@ -1,0 +1,481 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://agentfit.local/skills.json",
+  "definitions": {
+    "fact": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "field",
+        "value"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[a-z_]+:[0-9]{1,3}$"
+        },
+        "field": {
+          "enum": [
+            "frontend",
+            "backend",
+            "ai",
+            "database",
+            "deployment",
+            "features",
+            "external_integrations",
+            "work",
+            "purpose"
+          ]
+        },
+        "value": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 512
+        }
+      }
+    },
+    "need": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "name",
+        "query",
+        "sourceFields"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^n[1-6]$"
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 120
+        },
+        "query": {
+          "type": "string",
+          "minLength": 2,
+          "maxLength": 100,
+          "pattern": "^[a-z][a-z0-9 -]+$"
+        },
+        "sourceFields": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 12,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "pattern": "^[a-z_]+:[0-9]{1,3}$"
+          }
+        }
+      }
+    },
+    "needs": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "needs"
+      ],
+      "properties": {
+        "needs": {
+          "type": "array",
+          "maxItems": 6,
+          "items": {
+            "$ref": "#/definitions/need"
+          }
+        }
+      }
+    },
+    "needRequest": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "facts",
+        "deadline"
+      ],
+      "properties": {
+        "facts": {
+          "type": "array",
+          "maxItems": 96,
+          "items": {
+            "$ref": "#/definitions/fact"
+          }
+        },
+        "deadline": {
+          "type": "string",
+          "minLength": 20,
+          "maxLength": 32
+        },
+        "budget": {
+          "$ref": "#/definitions/budgetContext"
+        }
+      }
+    },
+    "candidate": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "name",
+        "content"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180,
+          "pattern": "^[A-Za-z0-9_./-]+$"
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 100
+        },
+        "content": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 6000
+        }
+      }
+    },
+    "rankRequest": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "needs",
+        "candidates",
+        "deadline"
+      ],
+      "properties": {
+        "needs": {
+          "type": "array",
+          "maxItems": 6,
+          "items": {
+            "$ref": "#/definitions/need"
+          }
+        },
+        "candidates": {
+          "type": "array",
+          "maxItems": 15,
+          "items": {
+            "$ref": "#/definitions/candidate"
+          }
+        },
+        "deadline": {
+          "type": "string",
+          "minLength": 20,
+          "maxLength": 32
+        },
+        "budget": {
+          "$ref": "#/definitions/budgetContext"
+        }
+      }
+    },
+    "ranking": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "matches"
+      ],
+      "properties": {
+        "matches": {
+          "type": "array",
+          "maxItems": 15,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "candidateId",
+              "needIds",
+              "score",
+              "reason"
+            ],
+            "properties": {
+              "candidateId": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 180
+              },
+              "needIds": {
+                "type": "array",
+                "minItems": 1,
+                "maxItems": 6,
+                "uniqueItems": true,
+                "items": {
+                  "type": "string",
+                  "pattern": "^n[1-6]$"
+                }
+              },
+              "score": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 100
+              },
+              "reason": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 240
+              }
+            }
+          }
+        }
+      }
+    },
+    "start": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "expectedVersions"
+      ],
+      "properties": {
+        "expectedVersions": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "project",
+            "developer",
+            "environment"
+          ],
+          "properties": {
+            "project": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "developer": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "environment": {
+              "type": "integer",
+              "minimum": 0
+            }
+          }
+        }
+      }
+    },
+    "queryWord": {
+      "enum": [
+        "accessibility",
+        "agent",
+        "agents",
+        "ai",
+        "analytics",
+        "android",
+        "angular",
+        "api",
+        "application",
+        "architecture",
+        "asynchronous",
+        "audio",
+        "audit",
+        "augmented",
+        "authentication",
+        "authorization",
+        "automation",
+        "aws",
+        "azure",
+        "backend",
+        "backup",
+        "best",
+        "billing",
+        "browser",
+        "business",
+        "caching",
+        "cd",
+        "checkout",
+        "chunking",
+        "ci",
+        "client",
+        "cloud",
+        "code",
+        "commerce",
+        "component",
+        "components",
+        "concurrency",
+        "context",
+        "crawler",
+        "cron",
+        "data",
+        "database",
+        "debugging",
+        "deployment",
+        "design",
+        "development",
+        "devops",
+        "distributed",
+        "docker",
+        "document",
+        "documentation",
+        "documentation-driven",
+        "download",
+        "ecommerce",
+        "email",
+        "embedding",
+        "embeddings",
+        "end",
+        "end-to-end",
+        "engineering",
+        "error",
+        "evaluation",
+        "evaluation-driven",
+        "express",
+        "extraction",
+        "fastapi",
+        "file",
+        "financial",
+        "fine",
+        "firebase",
+        "flutter",
+        "forms",
+        "frontend",
+        "gcp",
+        "generation",
+        "go",
+        "graph",
+        "graphql",
+        "handling",
+        "http",
+        "idempotency",
+        "image",
+        "infrastructure",
+        "ingestion",
+        "instrumentation",
+        "integration",
+        "internationalization",
+        "ios",
+        "java",
+        "javascript",
+        "kubernetes",
+        "langchain",
+        "langgraph",
+        "learning",
+        "limiting",
+        "llm",
+        "load",
+        "localization",
+        "logging",
+        "logic",
+        "machine",
+        "maintainability",
+        "management",
+        "migration",
+        "mobile",
+        "model",
+        "mongodb",
+        "monitoring",
+        "multimodal",
+        "native",
+        "neo4j",
+        "nextjs",
+        "node",
+        "notification",
+        "notifications",
+        "oauth",
+        "observability",
+        "optimization",
+        "orchestration",
+        "order",
+        "parsing",
+        "payment",
+        "payments",
+        "pdf",
+        "performance",
+        "pipeline",
+        "planning",
+        "playwright",
+        "postgres",
+        "postgresql",
+        "practices",
+        "prisma",
+        "processing",
+        "prompt",
+        "prompts",
+        "python",
+        "quality",
+        "queue",
+        "rag",
+        "rate",
+        "react",
+        "react-native",
+        "realtime",
+        "recommendation",
+        "recommendations",
+        "recovery",
+        "redis",
+        "refactoring",
+        "rendering",
+        "requirements",
+        "resilience",
+        "responsive",
+        "rest",
+        "retrieval",
+        "review",
+        "routing",
+        "rust",
+        "scheduling",
+        "scraping",
+        "search",
+        "security",
+        "semantic",
+        "seo",
+        "server",
+        "similarity",
+        "software",
+        "spring",
+        "sql",
+        "state",
+        "storage",
+        "streaming",
+        "stripe",
+        "subscription",
+        "summarization",
+        "supabase",
+        "svelte",
+        "tdd",
+        "telemetry",
+        "terraform",
+        "test",
+        "testing",
+        "testing-driven",
+        "token",
+        "tracing",
+        "transaction",
+        "transactions",
+        "tuning",
+        "typescript",
+        "ui",
+        "unit",
+        "upload",
+        "ux",
+        "validation",
+        "vector",
+        "vercel",
+        "video",
+        "vue",
+        "web",
+        "websocket",
+        "workflow"
+      ]
+    },
+    "budgetContext": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "targetId",
+        "leaseId"
+      ],
+      "properties": {
+        "targetId": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9_-]{1,100}$"
+        },
+        "leaseId": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9_-]{1,100}$"
+        }
+      }
+    }
+  }
+}

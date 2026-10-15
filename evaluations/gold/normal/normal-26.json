@@ -1,0 +1,23 @@
+{
+  "caseId": "normal-26",
+  "text": "프로젝트명: 지역모임26\n프로젝트 유형: 웹 서비스\n도메인: 지역 커뮤니티\n프론트엔드: React\n백엔드: Express.js\n기능: 모임 검색, 참가 신청\n외부 연동은 없습니다.\n데이터베이스와 배포 환경은 미정입니다.\n운영 지역 번호는 126입니다.",
+  "expected": {
+    "project_name": "지역모임26",
+    "project_type": "웹 서비스",
+    "domain": "지역 커뮤니티",
+    "frontend": [
+      "React"
+    ],
+    "backend": [
+      "Express.js"
+    ],
+    "ai": null,
+    "database": null,
+    "deployment": null,
+    "features": [
+      "모임 검색",
+      "참가 신청"
+    ],
+    "external_integrations": []
+  }
+}

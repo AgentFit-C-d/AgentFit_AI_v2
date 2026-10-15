@@ -1,0 +1,4 @@
+# Normalize source text; frozen evaluation data must keep its original bytes.
+* text=auto eol=lf
+evaluations/gold/** -text
+*.ttf binary

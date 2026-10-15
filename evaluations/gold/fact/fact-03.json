@@ -1,0 +1,22 @@
+{
+  "caseId": "fact-03",
+  "text": "프로젝트명: 사실검증3\n프론트엔드: Svelte\n백엔드: Django\n기능: 일정 관리\n데이터베이스와 배포 환경은 아직 정하지 않았습니다.",
+  "expected": {
+    "project_name": "사실검증3",
+    "project_type": null,
+    "domain": null,
+    "frontend": [
+      "Svelte"
+    ],
+    "backend": [
+      "Django"
+    ],
+    "ai": null,
+    "database": null,
+    "deployment": null,
+    "features": [
+      "일정 관리"
+    ],
+    "external_integrations": null
+  }
+}

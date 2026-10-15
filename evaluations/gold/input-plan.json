@@ -1,0 +1,210 @@
+{
+  "frozenBeforeMixedProviderCalls": true,
+  "goldManifestSha256": "59a1236b310cecdd7762a2795c52a2e3e8e096d3bb985ef6dcb70cdae5960c76",
+  "inputs": [
+    {
+      "caseId": "fact-01",
+      "kind": "pdf"
+    },
+    {
+      "caseId": "fact-02",
+      "kind": "markdown"
+    },
+    {
+      "caseId": "fact-03",
+      "kind": "text"
+    },
+    {
+      "caseId": "fact-04",
+      "kind": "pdf"
+    },
+    {
+      "caseId": "fact-05",
+      "kind": "markdown"
+    },
+    {
+      "caseId": "fact-06",
+      "kind": "text"
+    },
+    {
+      "caseId": "fact-07",
+      "kind": "pdf"
+    },
+    {
+      "caseId": "fact-08",
+      "kind": "markdown"
+    },
+    {
+      "caseId": "fact-09",
+      "kind": "text"
+    },
+    {
+      "caseId": "semantic-01",
+      "kind": "pdf"
+    },
+    {
+      "caseId": "semantic-02",
+      "kind": "markdown"
+    },
+    {
+      "caseId": "semantic-03",
+      "kind": "text"
+    },
+    {
+      "caseId": "semantic-04",
+      "kind": "pdf"
+    },
+    {
+      "caseId": "semantic-05",
+      "kind": "markdown"
+    },
+    {
+      "caseId": "semantic-06",
+      "kind": "text"
+    },
+    {
+      "caseId": "semantic-07",
+      "kind": "pdf"
+    },
+    {
+      "caseId": "semantic-08",
+      "kind": "markdown"
+    },
+    {
+      "caseId": "semantic-09",
+      "kind": "text"
+    },
+    {
+      "caseId": "semantic-10",
+      "kind": "pdf"
+    },
+    {
+      "caseId": "semantic-11",
+      "kind": "markdown"
+    },
+    {
+      "caseId": "semantic-12",
+      "kind": "text"
+    },
+    {
+      "caseId": "normal-01",
+      "kind": "pdf"
+    },
+    {
+      "caseId": "normal-02",
+      "kind": "markdown"
+    },
+    {
+      "caseId": "normal-03",
+      "kind": "text"
+    },
+    {
+      "caseId": "normal-04",
+      "kind": "pdf"
+    },
+    {
+      "caseId": "normal-05",
+      "kind": "markdown"
+    },
+    {
+      "caseId": "normal-06",
+      "kind": "text"
+    },
+    {
+      "caseId": "normal-07",
+      "kind": "pdf"
+    },
+    {
+      "caseId": "normal-08",
+      "kind": "markdown"
+    },
+    {
+      "caseId": "normal-09",
+      "kind": "text"
+    },
+    {
+      "caseId": "normal-10",
+      "kind": "pdf"
+    },
+    {
+      "caseId": "normal-11",
+      "kind": "markdown"
+    },
+    {
+      "caseId": "normal-12",
+      "kind": "text"
+    },
+    {
+      "caseId": "normal-13",
+      "kind": "pdf"
+    },
+    {
+      "caseId": "normal-14",
+      "kind": "markdown"
+    },
+    {
+      "caseId": "normal-15",
+      "kind": "text"
+    },
+    {
+      "caseId": "normal-16",
+      "kind": "pdf"
+    },
+    {
+      "caseId": "normal-17",
+      "kind": "markdown"
+    },
+    {
+      "caseId": "normal-18",
+      "kind": "text"
+    },
+    {
+      "caseId": "normal-19",
+      "kind": "pdf"
+    },
+    {
+      "caseId": "normal-20",
+      "kind": "markdown"
+    },
+    {
+      "caseId": "normal-21",
+      "kind": "text"
+    },
+    {
+      "caseId": "normal-22",
+      "kind": "pdf"
+    },
+    {
+      "caseId": "normal-23",
+      "kind": "markdown"
+    },
+    {
+      "caseId": "normal-24",
+      "kind": "text"
+    },
+    {
+      "caseId": "normal-25",
+      "kind": "pdf"
+    },
+    {
+      "caseId": "normal-26",
+      "kind": "markdown"
+    },
+    {
+      "caseId": "normal-27",
+      "kind": "text"
+    },
+    {
+      "caseId": "normal-28",
+      "kind": "pdf"
+    },
+    {
+      "caseId": "normal-29",
+      "kind": "markdown"
+    },
+    {
+      "caseId": "normal-30",
+      "kind": "text"
+    }
+  ]
+}

@@ -1,0 +1,16 @@
+{
+  "caseId": "semantic-06",
+  "text": "검증 문서 SEM06\n2차 단계에서 PostgreSQL을 사용할 계획입니다.",
+  "expected": {
+    "project_name": null,
+    "project_type": null,
+    "domain": null,
+    "frontend": null,
+    "backend": null,
+    "ai": null,
+    "database": null,
+    "deployment": null,
+    "features": null,
+    "external_integrations": null
+  }
+}

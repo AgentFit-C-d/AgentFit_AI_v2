@@ -1,0 +1,312 @@
+{
+  "version": "1.0",
+  "frozenBeforeProviderCalls": true,
+  "cases": [
+    {
+      "caseId": "fact-01",
+      "group": "fact",
+      "path": "fact/fact-01.json",
+      "sha256": "9585b749928da6e842fa1d2f3c6cd84085404c32e0623d51a6ad3552d699c4cd"
+    },
+    {
+      "caseId": "fact-02",
+      "group": "fact",
+      "path": "fact/fact-02.json",
+      "sha256": "773e117cfb989f8be32e4168c3408698ebd682c122c7afad915731287350101b"
+    },
+    {
+      "caseId": "fact-03",
+      "group": "fact",
+      "path": "fact/fact-03.json",
+      "sha256": "4bb490646d9862e54ef7686db7af48ef82c88f9fb26ce259dbfa414bcf099fc7"
+    },
+    {
+      "caseId": "fact-04",
+      "group": "fact",
+      "path": "fact/fact-04.json",
+      "sha256": "cedaef55867743ad33c6b149f99c070aa1e0ac84123c03897ecfe67f2739e05c"
+    },
+    {
+      "caseId": "fact-05",
+      "group": "fact",
+      "path": "fact/fact-05.json",
+      "sha256": "1b426dabab1b632334c57b1d7a55879895b080bec627e6112c47b1e2819984b3"
+    },
+    {
+      "caseId": "fact-06",
+      "group": "fact",
+      "path": "fact/fact-06.json",
+      "sha256": "a3e6c80355291f0a2c87f29c6a749079d911c59104a587f42ec6dc8dff680419"
+    },
+    {
+      "caseId": "fact-07",
+      "group": "fact",
+      "path": "fact/fact-07.json",
+      "sha256": "ee5067f4651c7ede04d881529b1551f73d4862051102b5528dc64ab91bdddef1"
+    },
+    {
+      "caseId": "fact-08",
+      "group": "fact",
+      "path": "fact/fact-08.json",
+      "sha256": "ec8935c73abba981beadd381a68608de8b255d7a47051e6efdb7d4e1283299c3"
+    },
+    {
+      "caseId": "fact-09",
+      "group": "fact",
+      "path": "fact/fact-09.json",
+      "sha256": "32e1b417f15a7c7dd55e9963f3d183f451772faed2aed73b6fe0111863e61846"
+    },
+    {
+      "caseId": "semantic-01",
+      "group": "semantic",
+      "path": "semantic/semantic-01.json",
+      "sha256": "4b193304db0a4671a196e74ca770a1e587c58bb199c6a7074714aebe2ce30214"
+    },
+    {
+      "caseId": "semantic-02",
+      "group": "semantic",
+      "path": "semantic/semantic-02.json",
+      "sha256": "39eb0153ae773562d5aaa9e8d33ca6682cbf5c87b962fce20e0459b92ad21c9b"
+    },
+    {
+      "caseId": "semantic-03",
+      "group": "semantic",
+      "path": "semantic/semantic-03.json",
+      "sha256": "2088a9a31e2c3831f570c8243ebda912bb49e28e4a1d4c2fd4650012b42b7941"
+    },
+    {
+      "caseId": "semantic-04",
+      "group": "semantic",
+      "path": "semantic/semantic-04.json",
+      "sha256": "6afd6d34bfd4bdce184325a6c8d71e3cb51424f820ea01e12d34e1e3ce9e473c"
+    },
+    {
+      "caseId": "semantic-05",
+      "group": "semantic",
+      "path": "semantic/semantic-05.json",
+      "sha256": "b3ff11fadb1fd4b27f4a1e94e10bc2c656c3f6b2dda0ff3122aa585159f8c613"
+    },
+    {
+      "caseId": "semantic-06",
+      "group": "semantic",
+      "path": "semantic/semantic-06.json",
+      "sha256": "8e30b4beeebf960566aeb5fcf71640b4195b06848bf4f18f9144e6c48a1eabba"
+    },
+    {
+      "caseId": "semantic-07",
+      "group": "semantic",
+      "path": "semantic/semantic-07.json",
+      "sha256": "2f9df366a0ca16dd6e5c5ad6c37bbb8de9bb5bfddae1f4318bd7f7bfbcf6f3b5"
+    },
+    {
+      "caseId": "semantic-08",
+      "group": "semantic",
+      "path": "semantic/semantic-08.json",
+      "sha256": "506852af0b55d958f5aec851e242f326a74110e05c58a65c780016ba48e7f5bb"
+    },
+    {
+      "caseId": "semantic-09",
+      "group": "semantic",
+      "path": "semantic/semantic-09.json",
+      "sha256": "097e3b90b0af8e0832ff5103ea17046c8e16b0196ea8cd89ff32d9c1caf672b1"
+    },
+    {
+      "caseId": "semantic-10",
+      "group": "semantic",
+      "path": "semantic/semantic-10.json",
+      "sha256": "acab4eacb2551bef4782d6d9c57a566018e5e958274b6a2561dfd9e968176a39"
+    },
+    {
+      "caseId": "semantic-11",
+      "group": "semantic",
+      "path": "semantic/semantic-11.json",
+      "sha256": "5c7f0e5afe623fe1778ddf5d3ed46b575a6b85b563b7ca24b87013477b8ec79f"
+    },
+    {
+      "caseId": "semantic-12",
+      "group": "semantic",
+      "path": "semantic/semantic-12.json",
+      "sha256": "08b58e57783c05882bdd76b4d36af23729f156d86bcbd1d6ab4f134b9de06f53"
+    },
+    {
+      "caseId": "normal-01",
+      "group": "normal",
+      "path": "normal/normal-01.json",
+      "sha256": "40962c9a2256c2779d39ee5944347aef46a85cb54b0e050899df4d22adb71caa"
+    },
+    {
+      "caseId": "normal-02",
+      "group": "normal",
+      "path": "normal/normal-02.json",
+      "sha256": "d78b6d8238221710a7aa6b0537b15c8029009c90b1a8eed8fc4d7c89f6f0f792"
+    },
+    {
+      "caseId": "normal-03",
+      "group": "normal",
+      "path": "normal/normal-03.json",
+      "sha256": "654754d00ff43b3a627a92f092423c5716e77290077f2da563e0d36bbaf3920a"
+    },
+    {
+      "caseId": "normal-04",
+      "group": "normal",
+      "path": "normal/normal-04.json",
+      "sha256": "b666a87520aa1145613da5dfe74404cecf8f6d5fa24ac972fe3828e4149d03e5"
+    },
+    {
+      "caseId": "normal-05",
+      "group": "normal",
+      "path": "normal/normal-05.json",
+      "sha256": "0a4772f1b4efd9d1a72b80637a14681f7a72d74dd21d670b3a02476db77e8c63"
+    },
+    {
+      "caseId": "normal-06",
+      "group": "normal",
+      "path": "normal/normal-06.json",
+      "sha256": "eaa3e7ef0796d766727a4072cbf9d11b053da60aeee9749e819301375b49375d"
+    },
+    {
+      "caseId": "normal-07",
+      "group": "normal",
+      "path": "normal/normal-07.json",
+      "sha256": "af827b34581eb79bf3f77ec06e41194cf1d1eb713f72fef8731509fa33e69ba2"
+    },
+    {
+      "caseId": "normal-08",
+      "group": "normal",
+      "path": "normal/normal-08.json",
+      "sha256": "e1da7107655f141fc455dad1be3da4452da7844558cb8c367af3b424d9941218"
+    },
+    {
+      "caseId": "normal-09",
+      "group": "normal",
+      "path": "normal/normal-09.json",
+      "sha256": "126c56fd43146e893894b3b3b141cd1e7005d2a0fa18829a2401c41f7649ac93"
+    },
+    {
+      "caseId": "normal-10",
+      "group": "normal",
+      "path": "normal/normal-10.json",
+      "sha256": "a4ac1cebe74c641761101c146deb853736272a2e832a99c0ec94528622dc6bb8"
+    },
+    {
+      "caseId": "normal-11",
+      "group": "normal",
+      "path": "normal/normal-11.json",
+      "sha256": "45c833c22d8f089e0d6f906fa2442d1a4622086fafff588554440278375547b1"
+    },
+    {
+      "caseId": "normal-12",
+      "group": "normal",
+      "path": "normal/normal-12.json",
+      "sha256": "e2c1ac2f8e068413f55263c12472c84b35c4e8fb611554bbae359f6dd5a6e22f"
+    },
+    {
+      "caseId": "normal-13",
+      "group": "normal",
+      "path": "normal/normal-13.json",
+      "sha256": "ba0cb2f1b3cb6203468692fd377d1338f0dbded58e46e72979c57419fcd724ea"
+    },
+    {
+      "caseId": "normal-14",
+      "group": "normal",
+      "path": "normal/normal-14.json",
+      "sha256": "50feb7e7524411e7af661060a885c4a6e5fa333a7b17260ba342efed2ea8f1e3"
+    },
+    {
+      "caseId": "normal-15",
+      "group": "normal",
+      "path": "normal/normal-15.json",
+      "sha256": "27e92ee136815aa16b3ca4d111a11bc8976ddac5548c65d2f68e91184c7b17b9"
+    },
+    {
+      "caseId": "normal-16",
+      "group": "normal",
+      "path": "normal/normal-16.json",
+      "sha256": "07468155e9c572d85485de02310d5f08618e82094dfeecbef515220e77826a45"
+    },
+    {
+      "caseId": "normal-17",
+      "group": "normal",
+      "path": "normal/normal-17.json",
+      "sha256": "991aae29ab04dc8fdc10793ed00cbf77c10eca29da506b2c9d7ad6fca8336752"
+    },
+    {
+      "caseId": "normal-18",
+      "group": "normal",
+      "path": "normal/normal-18.json",
+      "sha256": "9cf32632ae08a2f589de37e929c5ce9233ced411845bb1c470521e53b709ef98"
+    },
+    {
+      "caseId": "normal-19",
+      "group": "normal",
+      "path": "normal/normal-19.json",
+      "sha256": "5d1fac671cdeedc588e2173b8c2f255285ee278901f99f332fe2a3cb27d07025"
+    },
+    {
+      "caseId": "normal-20",
+      "group": "normal",
+      "path": "normal/normal-20.json",
+      "sha256": "4ecca1c93b2d58f16da14980ef2f32fb426ba89c352a4c61ce5ca1dc3d83c0dc"
+    },
+    {
+      "caseId": "normal-21",
+      "group": "normal",
+      "path": "normal/normal-21.json",
+      "sha256": "476b812d7e5ee18964c54d7f5e7fa1e2e9c069191d7f66172b79529741a14386"
+    },
+    {
+      "caseId": "normal-22",
+      "group": "normal",
+      "path": "normal/normal-22.json",
+      "sha256": "327fe4498b0e88ceecb08c3fdfdcb113d49ecf9b89742f47fbf42a71e900ee29"
+    },
+    {
+      "caseId": "normal-23",
+      "group": "normal",
+      "path": "normal/normal-23.json",
+      "sha256": "efba3a99e1413c95a5c9a417a1d6e5af83853aa3ba0fbb3c0bce4a108acda8d6"
+    },
+    {
+      "caseId": "normal-24",
+      "group": "normal",
+      "path": "normal/normal-24.json",
+      "sha256": "00782b980fbd84272d333eefa3d451a481f386d75ab0a0bb1ad6a2e2d89ca966"
+    },
+    {
+      "caseId": "normal-25",
+      "group": "normal",
+      "path": "normal/normal-25.json",
+      "sha256": "4f6037d4769b5b969f08a65b5ac335b5928c11fe032094dd75d7f5d78632d305"
+    },
+    {
+      "caseId": "normal-26",
+      "group": "normal",
+      "path": "normal/normal-26.json",
+      "sha256": "54cd814d6e841583af7fbe9302a910ea2acce49c071f552a7d722ee40d41a9c0"
+    },
+    {
+      "caseId": "normal-27",
+      "group": "normal",
+      "path": "normal/normal-27.json",
+      "sha256": "3ccf07fe0e9c4adb53a42cd11386aca5dbd0da5252f6e4ec7e04be2d7aa73e2a"
+    },
+    {
+      "caseId": "normal-28",
+      "group": "normal",
+      "path": "normal/normal-28.json",
+      "sha256": "25b2c950a6fbf7fef9f8bcc4f1fda0fe411b271a04e452257c8f988d459b4a59"
+    },
+    {
+      "caseId": "normal-29",
+      "group": "normal",
+      "path": "normal/normal-29.json",
+      "sha256": "c5e594e5de6a0c4095b30c71f13097e531b8ef5de5deeb8a19e62c7699903356"
+    },
+    {
+      "caseId": "normal-30",
+      "group": "normal",
+      "path": "normal/normal-30.json",
+      "sha256": "85ec857340b591c9a7f0222904c7c54cc587e9b51ad1227e5fa575f62b114dcc"
+    }
+  ]
+}

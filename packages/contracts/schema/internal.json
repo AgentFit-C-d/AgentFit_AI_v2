@@ -1,0 +1,245 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://agentfit.local/internal.v1.json",
+  "definitions": {
+    "id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 100,
+      "pattern": "^[A-Za-z0-9_-]+$"
+    },
+    "timestamp": {
+      "type": "string",
+      "maxLength": 40,
+      "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9:.]+Z$"
+    },
+    "jobMessage": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "outboxId",
+        "kind",
+        "targetId"
+      ],
+      "properties": {
+        "outboxId": {
+          "$ref": "#/definitions/id"
+        },
+        "kind": {
+          "enum": [
+            "analyze",
+            "expire",
+            "cleanup",
+            "purge",
+            "delete",
+            "discover",
+            "discover_expire"
+          ]
+        },
+        "targetId": {
+          "$ref": "#/definitions/id"
+        }
+      }
+    },
+    "queueOptions": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "notBefore",
+        "idempotencyKey"
+      ],
+      "properties": {
+        "notBefore": {
+          "$ref": "#/definitions/timestamp"
+        },
+        "idempotencyKey": {
+          "$ref": "#/definitions/id"
+        }
+      }
+    },
+    "inputRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "uploadId",
+        "storage",
+        "objectKey",
+        "expiresAt"
+      ],
+      "properties": {
+        "uploadId": {
+          "$ref": "#/definitions/id"
+        },
+        "storage": {
+          "enum": [
+            "local",
+            "vercel"
+          ]
+        },
+        "objectKey": {
+          "type": "string",
+          "maxLength": 120,
+          "pattern": "^inputs/[A-Za-z0-9_-]+$"
+        },
+        "expiresAt": {
+          "$ref": "#/definitions/timestamp"
+        }
+      }
+    },
+    "analyzeRequest": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "attemptId",
+        "leaseId",
+        "inputRef",
+        "provider",
+        "deadline",
+        "documentId",
+        "inputKind"
+      ],
+      "properties": {
+        "attemptId": {
+          "$ref": "#/definitions/id"
+        },
+        "leaseId": {
+          "$ref": "#/definitions/id"
+        },
+        "inputRef": {
+          "$ref": "#/definitions/inputRef"
+        },
+        "provider": {
+          "enum": [
+            "upstage",
+            "nvidia",
+            "solar"
+          ]
+        },
+        "deadline": {
+          "$ref": "#/definitions/timestamp"
+        },
+        "documentId": {
+          "$ref": "#/definitions/id"
+        },
+        "inputKind": {
+          "enum": [
+            "pdf",
+            "markdown",
+            "text"
+          ]
+        }
+      }
+    },
+    "budgetRequest": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "attemptId",
+        "leaseId",
+        "pages"
+      ],
+      "properties": {
+        "attemptId": {
+          "$ref": "#/definitions/id"
+        },
+        "leaseId": {
+          "$ref": "#/definitions/id"
+        },
+        "pages": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 100
+        }
+      }
+    },
+    "budgetGrant": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "reservationId",
+        "pages",
+        "amountMicroUsd"
+      ],
+      "properties": {
+        "reservationId": {
+          "$ref": "#/definitions/id"
+        },
+        "pages": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 100
+        },
+        "amountMicroUsd": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 20000000
+        }
+      }
+    },
+    "solarBudgetRequest": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "scope",
+        "targetId",
+        "leaseId",
+        "operation",
+        "inputBytes",
+        "outputTokens"
+      ],
+      "properties": {
+        "scope": {
+          "enum": [
+            "analysis",
+            "discovery"
+          ]
+        },
+        "targetId": {
+          "$ref": "#/definitions/id"
+        },
+        "leaseId": {
+          "$ref": "#/definitions/id"
+        },
+        "operation": {
+          "enum": [
+            "extract",
+            "review",
+            "needs",
+            "rank"
+          ]
+        },
+        "inputBytes": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 1048576
+        },
+        "outputTokens": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 8192
+        }
+      }
+    },
+    "solarBudgetGrant": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "reservationId",
+        "amountMicroUsd"
+      ],
+      "properties": {
+        "reservationId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 150,
+          "pattern": "^[A-Za-z0-9_-]+$"
+        },
+        "amountMicroUsd": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 20000000
+        }
+      }
+    }
+  }
+}

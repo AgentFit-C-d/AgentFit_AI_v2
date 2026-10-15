@@ -1,0 +1,418 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://agentfit.local/analysis.v1.json",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "profile",
+    "fieldStates",
+    "candidates",
+    "questions",
+    "safeWarnings",
+    "modelMetadata"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": "1.0"
+    },
+    "profile": {
+      "$ref": "https://agentfit.local/profile.v1.json"
+    },
+    "fieldStates": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "project_name",
+        "project_type",
+        "domain",
+        "frontend",
+        "backend",
+        "ai",
+        "database",
+        "deployment",
+        "features",
+        "external_integrations"
+      ],
+      "properties": {
+        "project_name": {
+          "$ref": "#/definitions/state"
+        },
+        "project_type": {
+          "$ref": "#/definitions/state"
+        },
+        "domain": {
+          "$ref": "#/definitions/state"
+        },
+        "frontend": {
+          "$ref": "#/definitions/state"
+        },
+        "backend": {
+          "$ref": "#/definitions/state"
+        },
+        "ai": {
+          "$ref": "#/definitions/state"
+        },
+        "database": {
+          "$ref": "#/definitions/state"
+        },
+        "deployment": {
+          "$ref": "#/definitions/state"
+        },
+        "features": {
+          "$ref": "#/definitions/state"
+        },
+        "external_integrations": {
+          "$ref": "#/definitions/state"
+        }
+      }
+    },
+    "candidates": {
+      "type": "array",
+      "maxItems": 200,
+      "items": {
+        "$ref": "#/definitions/candidate"
+      }
+    },
+    "questions": {
+      "type": "array",
+      "maxItems": 64,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "field",
+          "message",
+          "itemIds",
+          "required"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 100
+          },
+          "field": {
+            "anyOf": [
+              {
+                "$ref": "#/definitions/field"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "message": {
+            "type": "string",
+            "maxLength": 500
+          },
+          "itemIds": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "maxLength": 100
+            },
+            "maxItems": 200
+          },
+          "required": {
+            "type": "boolean"
+          }
+        }
+      }
+    },
+    "safeWarnings": {
+      "type": "array",
+      "maxItems": 20,
+      "items": {
+        "enum": [
+          "REVIEW_CONFIRMATION_REQUIRED",
+          "FIELDS_UNRESOLVED",
+          "STRUCTURED_ONLY",
+          "DOCUMENT_GROUNDED"
+        ]
+      }
+    },
+    "modelMetadata": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "provider",
+        "model",
+        "latencyMs",
+        "promptVersion",
+        "inputFormat"
+      ],
+      "properties": {
+        "provider": {
+          "enum": [
+            "upstage",
+            "nvidia",
+            "solar"
+          ]
+        },
+        "model": {
+          "type": "string",
+          "maxLength": 200
+        },
+        "latencyMs": {
+          "type": "number",
+          "minimum": 0
+        },
+        "promptVersion": {
+          "type": "string",
+          "maxLength": 50
+        },
+        "inputFormat": {
+          "enum": [
+            "text",
+            "canonical-pdf",
+            "original-pdf"
+          ]
+        },
+        "secondaryReview": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "provider",
+            "model",
+            "status",
+            "targetCount",
+            "acceptedCount",
+            "latencyMs"
+          ],
+          "properties": {
+            "provider": {
+              "enum": [
+                "nvidia",
+                "solar"
+              ]
+            },
+            "model": {
+              "type": "string",
+              "maxLength": 200
+            },
+            "status": {
+              "enum": [
+                "COMPLETED",
+                "FAILED",
+                "SKIPPED_TIME",
+                "SKIPPED_UNAVAILABLE",
+                "SKIPPED_LIMIT"
+              ]
+            },
+            "targetCount": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 5
+            },
+            "acceptedCount": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 5
+            },
+            "latencyMs": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "errorCode": {
+              "enum": [
+                "ANALYSIS_TIMEOUT",
+                "PROVIDER_UNAVAILABLE",
+                "PROVIDER_NOT_CONFIGURED",
+                "PROVIDER_RATE_LIMITED",
+                "PROVIDER_AUTH_FAILED",
+                "PROVIDER_MODEL_UNAVAILABLE",
+                "INVALID_PROVIDER_RESPONSE",
+                "INVALID_REVIEW_SCOPE",
+                "INVALID_PROVIDER_OUTPUT",
+                "SECRET_DETECTED",
+                "REVIEW_FAILED",
+                "BUDGET_EXCEEDED",
+                "INVALID_ANALYSIS_LEASE",
+                "BUDGET_RESERVATION_MISMATCH"
+              ]
+            }
+          }
+        }
+      }
+    }
+  },
+  "definitions": {
+    "state": {
+      "enum": [
+        "suggested",
+        "unknown",
+        "unresolved"
+      ]
+    },
+    "field": {
+      "enum": [
+        "project_name",
+        "project_type",
+        "domain",
+        "frontend",
+        "backend",
+        "ai",
+        "database",
+        "deployment",
+        "features",
+        "external_integrations"
+      ]
+    },
+    "evidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "documentId"
+      ],
+      "properties": {
+        "documentId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 100
+        },
+        "start": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 100000
+        },
+        "end": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 100000
+        },
+        "page": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 100
+        }
+      },
+      "anyOf": [
+        {
+          "properties": {
+            "start": {},
+            "end": {}
+          },
+          "required": [
+            "start",
+            "end"
+          ]
+        },
+        {
+          "properties": {
+            "page": {}
+          },
+          "required": [
+            "page"
+          ]
+        }
+      ],
+      "dependencies": {
+        "start": [
+          "end"
+        ],
+        "end": [
+          "start"
+        ]
+      }
+    },
+    "candidate": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "version",
+        "field",
+        "proposedValue",
+        "status",
+        "evidence"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 100
+        },
+        "version": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "field": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/field"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "proposedValue": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 200
+            },
+            {
+              "type": "array",
+              "maxItems": 100,
+              "items": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 200
+              }
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "status": {
+          "$ref": "#/definitions/state"
+        },
+        "usages": {
+          "type": "array",
+          "maxItems": 30,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "value",
+              "purpose",
+              "evidence"
+            ],
+            "properties": {
+              "value": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 200
+              },
+              "purpose": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 100
+              },
+              "evidence": {
+                "type": "array",
+                "minItems": 1,
+                "maxItems": 30,
+                "items": {
+                  "$ref": "#/definitions/evidence"
+                }
+              }
+            }
+          }
+        },
+        "evidence": {
+          "type": "array",
+          "maxItems": 30,
+          "items": {
+            "$ref": "#/definitions/evidence"
+          }
+        }
+      }
+    }
+  }
+}

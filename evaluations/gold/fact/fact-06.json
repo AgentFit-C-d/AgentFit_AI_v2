@@ -1,0 +1,22 @@
+{
+  "caseId": "fact-06",
+  "text": "프로젝트명: 사실검증6\n프론트엔드: React\n백엔드: Flask\n기능: 일정 관리\n데이터베이스와 배포 환경은 아직 정하지 않았습니다.",
+  "expected": {
+    "project_name": "사실검증6",
+    "project_type": null,
+    "domain": null,
+    "frontend": [
+      "React"
+    ],
+    "backend": [
+      "Flask"
+    ],
+    "ai": null,
+    "database": null,
+    "deployment": null,
+    "features": [
+      "일정 관리"
+    ],
+    "external_integrations": null
+  }
+}
