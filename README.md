@@ -1,8 +1,45 @@
-> 현재 브랜치: **backend**. 기존 AI main을 기반으로 backend 작업을 추가했습니다.
-> 이 브랜치의 실행·검증·포함 범위는 [backend 안내](docs/backend.md)를 먼저 확인하세요.
-> 아래 본문은 기반 main의 AI 서버 안내입니다.
+# AgentFit 통합 브랜치
 
-# AgentFit AI v2
+`integration`은 AI `main`을 공유하는 `frontend`와 `backend`를 합친 브랜치입니다. Next.js 웹(`apps/web`), Express API·Prisma(`apps/api`), FastAPI AI(`apps/ai`)와 공통 계약·Catalog·테스트를 함께 포함합니다. 원래 분리 브랜치와 AI main은 유지합니다.
+
+Node.js 24, pnpm 11.25.0, Python 3.12, uv가 필요합니다. 기존 Windows DB·AI 실행 보조 도구와 DB/E2E 테스트는 RTK도 사용합니다. [프론트 구성](docs/frontend.md), [백엔드·DB 준비](docs/backend.md)는 분리 당시의 안내이며 이 브랜치에서는 전체 프로젝트 명령을 사용할 수 있습니다.
+
+```powershell
+pnpm install --frozen-lockfile
+uv sync --frozen --project apps/ai
+Copy-Item .env.example .env
+pnpm setup:local
+pnpm db:local
+pnpm --filter @agentfit/api db:generate
+pnpm --filter @agentfit/api db:deploy
+```
+
+Docker를 사용하면 `pnpm db:local` 대신 `pnpm db:up`을 실행합니다. `.env`에 자신의 GitHub OAuth·Upstage 값을 넣고 별도 터미널 세 개에서 실행합니다.
+
+```powershell
+pnpm dev:api
+pnpm dev:ai
+pnpm dev:web
+```
+
+웹은 `http://localhost:3000`, API는 4000, AI는 8000 포트입니다. GitHub OAuth callback은 `http://localhost:3000/api/auth/callback/github`입니다. 비밀키와 로컬 DB·원문·생성 파일은 Git에 포함하지 않습니다.
+
+## 통합 검증 명령
+
+```powershell
+pnpm test
+uv run --frozen --project apps/ai pytest apps/ai/tests -q
+pnpm typecheck
+pnpm lint
+pnpm build
+pnpm test:e2e
+```
+
+Node 테스트는 격리 PostgreSQL을 사용합니다. 브라우저 E2E는 별도 웹·Express·FastAPI·DB를 실행하고 외부 모델·Skill 공급자만 합성 fixture로 대체합니다. 실제 GitHub 로그인·유료 모델 품질·Vercel 운영 검증과는 별도입니다. E2E 첫 실행 전에는 Playwright Chromium 설치가 필요할 수 있습니다.
+
+[통합 테스트 결과와 확인 범위](docs/integration-validation.md)를 참고하세요.
+
+## AI 서버
 
 AgentFit의 Python/FastAPI AI 서버입니다. 기존 프로젝트에서 AI 담당 코드와 테스트, 합성 평가 데이터, 필수 공통 JSON 계약만 분리했습니다. 원래 경로를 유지하므로 `apps/ai`가 Python 프로젝트 루트입니다.
 
@@ -15,7 +52,7 @@ AgentFit의 Python/FastAPI AI 서버입니다. 기존 프로젝트에서 AI 담�
 - 내부 Bearer 인증, 공급자 오류 분류, 비밀값 검사와 백엔드 예산 예약 연동.
 - AI 테스트와 합성 정답 51개(FACT 9, SEMANTIC 12, NORMAL 30).
 
-웹 화면, Express API, 사용자 로그인, DB, skills.sh/GitHub 검색·패키지 검사, 최종 추천 선택·라이브러리 묶음·ZIP 생성은 별도 서비스의 책임이며 이 저장소에 포함하지 않습니다. AI의 점수 출력 이후 75점 추천·70~74점 추가 후보 노출은 별도 API/UI에서 처리합니다.
+웹 화면·Express API·사용자 로그인·DB·skills.sh/GitHub 검색·패키지 검사·최종 추천·ZIP 생성은 이 통합 브랜치의 웹/API가 담당합니다. AI의 점수 출력 이후 75점 추천·70~74점 추가 후보 노출은 API/UI에서 처리합니다.
 
 팀의 Spring Boot 기반 FullStack에 연결하려면 [연동 비교와 다음 변경안](docs/fullstack-integration.md)을 먼저 확인하세요. 현재 두 서비스는 HTTP 계약이 달라 바로 교체할 수는 없습니다.
 
