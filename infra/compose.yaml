@@ -1,0 +1,16 @@
+services:
+  postgres:
+    image: postgres:17-alpine
+    ports: ["127.0.0.1:5433:5432"]
+    environment:
+      POSTGRES_USER: agentfit
+      POSTGRES_PASSWORD: ${LOCAL_DB_PASSWORD:?Run local setup first}
+      POSTGRES_DB: agentfit
+    volumes: ["agentfit-postgres:/var/lib/postgresql/data"]
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U agentfit -d agentfit"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+volumes:
+  agentfit-postgres:

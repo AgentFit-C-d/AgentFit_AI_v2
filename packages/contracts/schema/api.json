@@ -1,0 +1,21 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://agentfit.local/api.v1.json",
+  "definitions": {
+    "analysisInput": { "oneOf": [
+      { "type": "object", "additionalProperties": false, "required": ["kind", "text"], "properties": { "kind": { "const": "text" }, "text": { "type": "string", "minLength": 1, "maxLength": 100000 } } },
+      { "type": "object", "additionalProperties": false, "required": ["kind", "uploadId"], "properties": { "kind": { "const": "upload" }, "uploadId": { "type": "string", "minLength": 1, "maxLength": 100 } } }
+    ] },
+    "profilePatch": { "type": "object", "additionalProperties": false, "required": ["expectedVersion", "profile"], "properties": {
+      "expectedVersion": { "type": "integer", "minimum": 1 }, "profile": { "$ref": "https://agentfit.local/profile.v1.json" },
+      "draftId": { "type": "string", "minLength": 1, "maxLength": 100 }, "draftVersion": { "type": "integer", "minimum": 1 },
+      "reviewDecisions": { "type": "array", "maxItems": 200, "items": { "type": "object", "additionalProperties": false, "required": ["itemId", "version", "action"], "properties": {
+        "itemId": { "type": "string", "minLength": 1, "maxLength": 100 }, "version": { "type": "integer", "minimum": 1 },
+        "action": { "enum": ["ACCEPT", "EDIT", "REJECT", "DEFER"] }, "editedValue": { "anyOf": [{ "type": "string", "minLength": 1, "maxLength": 200 }, { "type": "array", "maxItems": 100, "items": { "type": "string", "minLength": 1, "maxLength": 200 } }, { "type": "null" }] }
+      } } }
+    }, "dependencies": { "draftId": ["draftVersion"], "draftVersion": ["draftId"], "reviewDecisions": ["draftId", "draftVersion"] } },
+    "createProject": { "type": "object", "additionalProperties": false, "required": ["name"], "properties": { "name": { "type": "string", "minLength": 1, "maxLength": 200, "pattern": "\\S" } } },
+    "deleteProject": { "type": "object", "additionalProperties": false, "required": ["confirmation"], "properties": { "confirmation": { "const": true } } },
+    "uploadMetadata": { "type": "object", "additionalProperties": false, "required": ["kind", "size", "contentType"], "properties": { "kind": { "enum": ["pdf", "markdown", "text"] }, "size": { "type": "integer", "minimum": 1, "maximum": 10485760 }, "contentType": { "enum": ["application/pdf", "text/markdown", "text/plain", "application/octet-stream"] } } }
+  }
+}

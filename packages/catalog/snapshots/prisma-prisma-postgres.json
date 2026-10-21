@@ -1,0 +1,21 @@
+{
+  "id": "prisma-prisma-postgres",
+  "name": "prisma-postgres",
+  "repository": "prisma/skills",
+  "commit": "be16a8740d01363d13552b317042431ee8dfc581",
+  "sourcePath": "prisma-postgres",
+  "license": "MIT",
+  "licenseEvidence": "REPOSITORY_LICENSE",
+  "files": [
+    {
+      "path": "SKILL.md",
+      "content": "---\nname: prisma-postgres\ndescription: Deprecated compatibility name for prisma-postgres-setup. Use only when a user or existing integration explicitly invokes prisma-postgres; otherwise select prisma-postgres-setup.\nlicense: MIT\nmetadata:\n  author: prisma\n  version: \"8.0.0\"\n---\n\n# Deprecated: prisma-postgres\n\nLoad `prisma-postgres-setup` with the host's skill loader or read its installed `SKILL.md`. If unavailable, install it from [prisma/skills](https://github.com/prisma/skills/tree/main/prisma-postgres-setup) before continuing.\n\nThis compatibility entry contains no setup recipes. Keep it until consumers have migrated to the replacement.\n",
+      "sha256": "f8d565a1bc2f598ccfce6b0f9e9adcb3450ad65639e3e969a1e0d03e2d349c82"
+    },
+    {
+      "path": "LICENSE.txt",
+      "content": "MIT License\n\nCopyright (c) 2025 Prisma\n\nPermission is hereby granted, free of charge, to any person obtaining a copy\nof this software and associated documentation files (the \"Software\"), to deal\nin the Software without restriction, including without limitation the rights\nto use, copy, modify, merge, publish, distribute, sublicense, and/or sell\ncopies of the Software, and to permit persons to whom the Software is\nfurnished to do so, subject to the following conditions:\n\nThe above copyright notice and this permission notice shall be included in all\ncopies or substantial portions of the Software.\n\nTHE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR\nIMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,\nFITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE\nAUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER\nLIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,\nOUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE\nSOFTWARE.\n",
+      "sha256": "03b4d243884e832289d7306e3bcc725ce5095834cc91e0be2b46f178eaafd973"
+    }
+  ]
+}

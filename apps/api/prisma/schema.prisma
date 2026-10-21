@@ -1,0 +1,326 @@
+generator client {
+  provider = "prisma-client"
+  output = "../src/generated/prisma"
+  moduleFormat = "esm"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id String @id
+  name String
+  email String @unique
+  emailVerified Boolean @default(false)
+  image String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  sessions Session[]
+  accounts Account[]
+  projects Project[]
+}
+
+model Session {
+  id String @id
+  expiresAt DateTime
+  token String @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  ipAddress String?
+  userAgent String?
+  userId String
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  @@index([userId])
+}
+
+model Account {
+  id String @id
+  accountId String
+  providerId String
+  userId String
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  accessToken String?
+  refreshToken String?
+  idToken String?
+  accessTokenExpiresAt DateTime?
+  refreshTokenExpiresAt DateTime?
+  scope String?
+  password String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  @@index([userId])
+}
+
+model Verification {
+  id String @id
+  identifier String
+  value String
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  @@index([identifier])
+}
+
+model Project {
+  id String @id @default(uuid())
+  ownerId String
+  owner User @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  name String
+  version Int @default(1)
+  deletingAt DateTime?
+  confirmedProfile Json?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  drafts Draft[]
+  profileAudits ProfileAudit[]
+  attempts AnalysisAttempt[]
+  uploads Upload[]
+  developerProfile DeveloperProfile?
+  environmentProfile EnvironmentProfile?
+  recommendations Recommendation[]
+  configPreviews ConfigPreview[]
+  configApprovals ConfigApproval[]
+  configurations Configuration[]
+  configurationReports ConfigurationReport[]
+  skillDiscoveries SkillDiscovery[]
+  solarBudgetReservations SolarBudgetReservation[]
+  @@index([ownerId, createdAt])
+}
+
+model Draft {
+  id String @id @default(uuid())
+  projectId String
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  version Int @default(1)
+  result Json
+  createdAt DateTime @default(now())
+  attemptId String? @unique
+  attempt AnalysisAttempt? @relation(fields: [attemptId], references: [id], onDelete: Cascade)
+  @@index([projectId, createdAt])
+}
+
+enum AnalysisStatus {
+  QUEUED
+  PROCESSING
+  SUCCEEDED
+  FAILED
+  CANCELLED
+}
+enum UploadState {
+  GRANTED
+  UPLOADING
+  READY
+  CLAIMED
+  DELETED
+}
+enum Provider {
+  upstage
+  nvidia
+  solar
+}
+enum InputStorage {
+  local
+  vercel
+}
+enum InputKind {
+  pdf
+  markdown
+  text
+}
+enum JobKind {
+  analyze
+  expire
+  cleanup
+  purge
+  delete
+  discover
+  discover_expire
+}
+
+model SkillDiscovery {
+  id String @id @default(uuid())
+  projectId String
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  basis Json
+  status String @default("QUEUED")
+  result Json
+  leaseId String?
+  errorCode String?
+  createdAt DateTime @default(now())
+  deadline DateTime
+  finishedAt DateTime?
+  @@index([projectId, createdAt])
+  @@index([status, deadline])
+}
+
+model SkillArtifact {
+  id String @id
+  package Json
+  checkedAt DateTime
+  expiresAt DateTime
+}
+
+model Upload {
+  id String @id
+  ownerId String
+  projectId String?
+  project Project? @relation(fields: [projectId], references: [id], onDelete: SetNull)
+  objectKey String @unique
+  storage InputStorage
+  kind InputKind
+  size Int
+  contentType String
+  expiresAt DateTime
+  state UploadState @default(GRANTED)
+  createdAt DateTime @default(now())
+  attempt AnalysisAttempt?
+  @@index([ownerId, projectId])
+  @@index([expiresAt])
+}
+
+model AnalysisAttempt {
+  id String @id @default(uuid())
+  projectId String
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  ownerId String
+  uploadId String @unique
+  upload Upload @relation(fields: [uploadId], references: [id], onDelete: Restrict)
+  provider Provider
+  status AnalysisStatus @default(QUEUED)
+  createdAt DateTime @default(now())
+  deadline DateTime
+  finishedAt DateTime?
+  errorCode String?
+  leaseId String?
+  draft Draft?
+  budget BudgetLedger?
+  diagnostic FailureDiagnostic?
+  @@index([ownerId, status, deadline])
+  @@index([projectId, status])
+}
+
+model JobOutbox {
+  id String @id @default(uuid())
+  kind JobKind
+  targetId String
+  dueAt DateTime
+  publishedAt DateTime?
+  completedAt DateTime?
+  createdAt DateTime @default(now())
+  @@index([completedAt, dueAt])
+}
+
+model BudgetCounter {
+  id String @id
+  spentMicroUsd Int @default(0)
+}
+
+model SolarBudgetReservation {
+  id String @id
+  projectId String
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  inputBytes Int
+  outputTokens Int
+  amountMicroUsd Int
+  createdAt DateTime @default(now())
+  @@index([projectId])
+}
+
+model FailureDiagnostic {
+  id String @id @default(uuid())
+  attemptId String @unique
+  attempt AnalysisAttempt @relation(fields: [attemptId], references: [id], onDelete: Cascade)
+  ciphertext Bytes
+  iv Bytes
+  authTag Bytes
+  receivedAt DateTime
+  expiresAt DateTime
+  @@index([expiresAt])
+}
+
+model BudgetLedger {
+  id String @id @default(uuid())
+  attemptId String @unique
+  attempt AnalysisAttempt @relation(fields: [attemptId], references: [id], onDelete: Cascade)
+  pages Int
+  amountMicroUsd Int
+  createdAt DateTime @default(now())
+}
+
+model ProfileAudit {
+  id String @id @default(uuid())
+  projectId String
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  version Int
+  draftId String?
+  decisions Json
+  confirmedAt DateTime
+  @@unique([projectId, version])
+}
+
+model DeveloperProfile {
+  projectId String @id
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  data Json
+  version Int @default(1)
+  updatedAt DateTime @updatedAt
+}
+
+model EnvironmentProfile {
+  projectId String @id
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  data Json
+  version Int @default(1)
+  updatedAt DateTime @updatedAt
+}
+
+model Recommendation {
+  id String @id @default(uuid())
+  projectId String
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  basis Json
+  result Json
+  createdAt DateTime @default(now())
+  @@index([projectId, createdAt])
+}
+
+model ConfigPreview {
+  id String @id @default(uuid())
+  projectId String
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  metadata Json
+  createdAt DateTime @default(now())
+  expiresAt DateTime
+  @@index([projectId, createdAt])
+}
+model ConfigApproval {
+  id String @id @default(uuid())
+  projectId String
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  previewId String
+  fingerprint String
+  approvedAt DateTime @default(now())
+  expiresAt DateTime
+  @@index([projectId, previewId])
+}
+model Configuration {
+  id String @id @default(uuid())
+  projectId String
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  metadata Json
+  createdAt DateTime @default(now())
+  reports ConfigurationReport[]
+  @@index([projectId, createdAt, id])
+}
+model ConfigurationReport {
+  id String @id @default(uuid())
+  projectId String
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  configurationId String
+  configuration Configuration @relation(fields: [configurationId], references: [id], onDelete: Cascade)
+  reportedState String
+  reasonCode String?
+  reportedAt DateTime @default(now())
+  @@index([configurationId, reportedAt])
+}

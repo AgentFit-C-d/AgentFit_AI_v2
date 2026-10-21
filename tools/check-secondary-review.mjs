@@ -1,0 +1,10 @@
+import { createRequire } from 'node:module';
+import { spawn } from 'node:child_process';
+import { aiEnvironment } from './run-ai.mjs';
+const require = createRequire(new URL('../apps/api/package.json', import.meta.url));
+require('dotenv').config({ path: new URL('../.env', import.meta.url), quiet: true });
+if (process.env.RUNTIME_MODE !== 'local') throw new Error('LOCAL_EVALUATION_REQUIRED');
+const environment = { ...aiEnvironment(process.env), PYTHONPATH: 'apps/ai' };
+const child = spawn('rtk', ['proxy', 'uv', '--cache-dir', 'work/harness/mvp-implementation/uv-cache', 'run', '--project', 'apps/ai', 'python', 'evaluations/check_secondary_review.py'], { env: environment, stdio: 'inherit', windowsHide: true });
+child.on('error', () => { process.stderr.write('EVALUATION_RUN_FAILED\n'); process.exitCode = 1; });
+child.on('exit', code => { process.exitCode = code ?? 1; });

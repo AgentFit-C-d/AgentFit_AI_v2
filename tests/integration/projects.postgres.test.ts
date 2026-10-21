@@ -1,0 +1,33 @@
+import { afterAll, beforeAll, expect, test } from 'vitest';
+import request from 'supertest';
+import { testDatabase } from '../support/postgres';
+import { createApp } from '../../apps/api/src/app';
+import { createAuth } from '../../apps/api/src/auth/auth';
+import { sessionReader } from '../../apps/api/src/auth/session';
+import { PrismaProjectRepository } from '../../apps/api/src/projects/prisma-repository';
+import { createHmac } from 'node:crypto';
+let fixture: Awaited<ReturnType<typeof testDatabase>>;
+beforeAll(async () => { fixture = await testDatabase(); }, 60_000);
+afterAll(async () => { if (fixture) await fixture.stop(); });
+test('persists owned projects across repository instances and uses actual DB sessions', async () => {
+  const db = fixture.db;
+  await db.user.create({ data: { id: 'alice', name: 'Alice', email: 'alice@example.invalid' } });
+  await db.session.create({ data: { id: 's1', token: 'test-session', userId: 'alice', expiresAt: new Date(Date.now() + 60_000) } });
+  const auth = createAuth(db, { databaseUrl: '', authSecret: 'test-only-secret'.repeat(4), webOrigin: 'http://localhost:3000', port: 4000, github: null });
+  const session = sessionReader(auth);
+  const app = createApp({ webOrigin: 'http://localhost:3000', projects: new PrismaProjectRepository(db), session });
+  // Tests inject identity at the signed-session boundary only; no production route accepts a test user.
+  const created = await new PrismaProjectRepository(db).create('alice', '실제 저장');
+  const reopened = await new PrismaProjectRepository(db).findOwned('alice', created.id);
+  expect(reopened?.name).toBe('실제 저장');
+  expect(reopened?.ownerId).toBe('alice');
+  expect(await new PrismaProjectRepository(db).findOwned('bob', created.id)).toBeNull();
+  expect((await request(app).get('/api/projects').set('x-user-id', 'alice')).status).toBe(401);
+  expect(await session({})).toBeNull();
+  const signature = createHmac('sha256', 'test-only-secret'.repeat(4)).update('test-session').digest('base64');
+  const cookie = `better-auth.session_token=${encodeURIComponent(`test-session.${signature}`)}`;
+  expect((await request(app).get('/api/projects').set('Cookie', cookie)).body[0].id).toBe(created.id);
+  expect((await request(app).get('/api/projects').set('Cookie', 'better-auth.session_token=test-session.forged')).status).toBe(401);
+  await db.session.deleteMany({ where: { userId: 'alice' } });
+  expect((await request(app).get('/api/projects').set('Cookie', cookie)).status).toBe(401);
+});

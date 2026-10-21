@@ -1,0 +1,76 @@
+import { expect, test } from 'vitest';
+import { LocalInputStore } from '../../apps/api/src/storage/local-store';
+import { MAX_UPLOAD_BYTES } from '../../apps/api/src/storage/ports';
+import { UploadService } from '../../apps/api/src/storage/uploads';
+import { MemoryUploadRepository } from '../support/uploads';
+test('keeps input only in memory, isolates references, and deletes bytes', async () => {
+  const store = new LocalInputStore();
+  const data = new TextEncoder().encode('프로젝트: AgentFit');
+  const metadata = { kind: 'text' as const, size: data.length, contentType: 'text/plain' };
+  const ref = await store.put(data, metadata);
+  data.fill(0);
+  expect(new TextDecoder().decode(await store.read(ref))).toBe('프로젝트: AgentFit');
+  await expect(store.read({ ...ref, objectKey: '../../secrets' })).rejects.toThrow('INPUT_UNAVAILABLE');
+  await expect(new LocalInputStore().read(ref)).rejects.toThrow('INPUT_UNAVAILABLE');
+  await store.delete(ref);
+  await expect(store.read(ref)).rejects.toThrow('INPUT_UNAVAILABLE');
+});
+test('accepts equal byte limit, denies oversized/mismatched/mislabelled inputs', async () => {
+  const store = new LocalInputStore();
+  const data = new Uint8Array(MAX_UPLOAD_BYTES).fill(97);
+  const metadata = { kind: 'text' as const, size: data.length, contentType: 'text/plain' };
+  const ref = await store.put(data, metadata);
+  expect((await store.read(ref)).length).toBe(MAX_UPLOAD_BYTES);
+  await expect(store.put(new Uint8Array(MAX_UPLOAD_BYTES + 1), { ...metadata, size: MAX_UPLOAD_BYTES + 1 })).rejects.toThrow();
+  await expect(store.put(data, { ...metadata, size: 1 })).rejects.toThrow('SIZE_MISMATCH');
+  await expect(store.put(new TextEncoder().encode('not pdf'), { kind: 'pdf', size: 7, contentType: 'application/pdf' })).rejects.toThrow('INVALID_PDF');
+  await expect(store.put(new Uint8Array([255]), { kind: 'markdown', size: 1, contentType: 'text/plain' })).rejects.toThrow('MIME_MISMATCH');
+});
+test('grant permits one write and expires without browser involvement', async () => {
+  let now = 1000;
+  const store = new LocalInputStore(() => now);
+  const data = new TextEncoder().encode('Hello');
+  const metadata = { kind: 'text' as const, size: 5, contentType: 'text/plain' };
+  const ref = store.allocate(metadata);
+  await store.write(ref, data, metadata);
+  await expect(store.write(ref, data, metadata)).rejects.toThrow('UPLOAD_ALREADY_COMPLETED');
+  now += 10 * 60 * 1000;
+  await expect(store.read(ref)).rejects.toThrow('INPUT_UNAVAILABLE');
+  await expect(store.write(ref, data, metadata)).rejects.toThrow('INPUT_UNAVAILABLE');
+});
+test('authorizes a project, schedules cleanup before grant, rejects stolen/replayed upload', async () => {
+  const store = new LocalInputStore(); const repository = new MemoryUploadRepository();
+  let published = false;
+  const service = new UploadService(store, repository, async owner => owner === 'alice', async id => { expect(repository.scheduled).toContain(id); published = true; });
+  await expect(service.createUpload('bob', 'private', { kind: 'text', size: 5, contentType: 'text/plain' })).rejects.toThrow('PROJECT_NOT_FOUND');
+  const grant = await service.createUpload('alice', 'private', { kind: 'text', size: 5, contentType: 'text/plain' });
+  expect(published).toBe(true);
+  expect(grant.uploadUrl).not.toContain('token');
+  await expect(service.completeLocalUpload('bob', 'private', grant.uploadId, new TextEncoder().encode('Hello'))).rejects.toThrow('UPLOAD_NOT_FOUND');
+  await service.completeLocalUpload('alice', 'private', grant.uploadId, new TextEncoder().encode('Hello'));
+  expect((await service.getOwnedReady('alice', 'private', grant.uploadId)).state).toBe('READY');
+  await expect(service.completeLocalUpload('alice', 'private', grant.uploadId, new TextEncoder().encode('Hello'))).rejects.toThrow('UPLOAD_ALREADY_COMPLETED');
+});
+test('does not issue a grant if independent cleanup scheduling fails or input carries filename/URL', async () => {
+  const store = new LocalInputStore(); const repository = new MemoryUploadRepository();
+  const service = new UploadService(store, repository, async () => true, async () => { throw new Error('QUEUE_UNAVAILABLE'); });
+  await expect(service.createUpload('alice', 'p', { kind: 'pdf', size: 20, contentType: 'application/pdf', filename: '../secret' })).rejects.toThrow();
+  await expect(service.createUpload('alice', 'p', { kind: 'text', size: 5, contentType: 'text/plain' })).rejects.toThrow('QUEUE_UNAVAILABLE');
+  const record = [...repository.records.values()][0]!;
+  await expect(store.read(record.ref)).rejects.toThrow('INPUT_UNAVAILABLE');
+});
+test('binds Blob token to owner/path/size/expiry and verifies uploaded bytes before ready', async () => {
+  const local = new LocalInputStore();
+  const repository = new MemoryUploadRepository();
+  const store = { storage: 'vercel' as const, allocate: (metadata: Parameters<typeof local.allocate>[0]) => ({ ...local.allocate(metadata), storage: 'vercel' as const }), write: local.write.bind(local), put: local.put.bind(local), read: async () => new TextEncoder().encode('Hello'), delete: async () => {} };
+  const service = new UploadService(store, repository, async owner => owner === 'alice', async () => {});
+  const grant = await service.createUpload('alice', 'p', { kind: 'text', size: 5, contentType: 'text/plain' });
+  await expect(service.issueBlobOptions('bob', 'p', grant.uploadId, grant.objectKey, false)).rejects.toThrow('UPLOAD_NOT_FOUND');
+  await expect(service.issueBlobOptions('alice', 'p', grant.uploadId, '../bad', false)).rejects.toThrow('INVALID_UPLOAD_PATH');
+  const options = await service.issueBlobOptions('alice', 'p', grant.uploadId, grant.objectKey, false);
+  expect(options).toMatchObject({ maximumSizeInBytes: 5, allowOverwrite: false, addRandomSuffix: false, tokenPayload: grant.uploadId });
+  await expect(service.issueBlobOptions('alice', 'p', grant.uploadId, grant.objectKey, false)).rejects.toThrow('UPLOAD_ALREADY_COMPLETED');
+  await service.completeBlob(grant.uploadId, grant.objectKey);
+  expect((await service.getOwnedReady('alice', 'p', grant.uploadId)).state).toBe('READY');
+  await service.completeBlob(grant.uploadId, grant.objectKey);
+});

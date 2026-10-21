@@ -1,0 +1,14 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "framework": null,
+  "buildCommand": "pnpm db:generate && pnpm build",
+  "functions": {
+    "api/index.ts": { "maxDuration": 210 },
+    "api/queues/jobs.ts": { "maxDuration": 210, "experimentalTriggers": [{ "type": "queue/v2beta", "topic": "agentfit-jobs" }] },
+    "api/queues/recovery.ts": { "maxDuration": 90, "experimentalTriggers": [{ "type": "queue/v2beta", "topic": "agentfit-recovery" }] }
+  },
+  "rewrites": [
+    { "source": "/internal/:path*", "destination": "/api/index" },
+    { "source": "/api/(?!queues/)(.*)", "destination": "/api/index" }
+  ]
+}

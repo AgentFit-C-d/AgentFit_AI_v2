@@ -1,0 +1,12 @@
+import { writeFileSync } from 'node:fs';
+const obj = (properties, required = Object.keys(properties)) => ({ type: 'object', additionalProperties: false, properties, required });
+const str = (maxLength, pattern) => ({ type: 'string', minLength: 1, maxLength, ...(pattern ? { pattern } : {}) });
+const id = str(128, '^[A-Za-z0-9_-]+$');
+const hash = str(64, '^[a-f0-9]{64}$');
+const basis = obj({ projectVersion: { type: 'integer', minimum: 1 }, developerVersion: { type: 'integer', minimum: 0 }, environmentVersion: { type: 'integer', minimum: 0 }, catalogRevision: hash });
+const policy = obj({ catalogItemId: id, key: str(200), resourceScope: str(200), mappingId: str(200), policy: { enum: ['ASK_EACH_TIME', 'ALWAYS_ALLOW', 'DENY'] } });
+const preview = obj({ recommendationId: id, expectedBasis: basis, selectedToolIds: { type: 'array', minItems: 1, maxItems: 20, uniqueItems: true, items: id }, permissionPolicies: { type: 'array', maxItems: 200, items: policy }, existingState: { enum: ['UNKNOWN', 'USER_SAYS_EMPTY', 'PROVIDED'] }, existingFiles: { type: 'array', maxItems: 20, items: obj({ targetKey: str(200), relativePath: str(200), content: { type: 'string', maxLength: 100000 } }) }, customSkill: obj({ name: str(64, '^(?!(?:con|prn|aux|nul|com[1-9]|lpt[1-9])$)[a-z0-9]+(?:-[a-z0-9]+)*$'), description: str(200), instructions: str(10000) }) }, ['recommendationId', 'expectedBasis', 'selectedToolIds', 'permissionPolicies', 'existingState', 'existingFiles']);
+const approval = obj({ previewId: id, previewFingerprint: hash, confirmation: { const: true } });
+const exp = obj({ approvalId: id, previewId: id, previewFingerprint: hash, input: preview });
+const report = obj({ reportedState: { enum: ['APPLIED', 'FAILED'] }, reasonCode: { enum: [null, 'COPY_FAILED', 'AUTH_REQUIRED', 'DEPENDENCY_MISSING', 'UNKNOWN'] } });
+writeFileSync('packages/contracts/schema/configuration.json', JSON.stringify({ $schema: 'http://json-schema.org/draft-07/schema#', $id: 'https://agentfit.local/configuration.schema.json', definitions: { preview, approval, export: exp, report } }, null, 2) + '\n');

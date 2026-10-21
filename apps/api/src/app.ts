@@ -1,0 +1,67 @@
+import express, { type RequestHandler } from 'express';
+import helmet from 'helmet';
+import { randomUUID } from 'node:crypto';
+import type { IncomingHttpHeaders } from 'node:http';
+import type { SessionUser } from '@agentfit/contracts';
+import type { ProjectRepository } from './projects/service';
+import { ProjectsService } from './projects/service';
+import { projectRoutes } from './projects/routes';
+import { AppError, errorHandler } from './http/errors';
+import { requireTrustedOrigin } from './http/origin';
+import type { AnalysisService } from './analysis/service';
+import type { UploadService } from './storage/uploads';
+import { analysisRoutes } from './analysis/routes';
+import { uploadRoutes } from './storage/routes';
+import type { DeleteProjectService } from './projects/delete';
+import type { ProfileRepository } from './recommendations/profiles';
+import { profileRoutes } from './recommendations/profile-routes';
+import { recordBodySize } from './http/body-limit';
+import { catalogRoutes } from './recommendations/catalog-routes';
+import type { RecommendationService } from './recommendations/service';
+import { recommendationRoutes } from './recommendations/routes';
+import { configurationRoutes } from './configuration/routes';
+import type { ConfigurationService } from './configuration/service';
+import { skillDiscoveryRoutes } from './skills/routes';
+import type { SkillDiscoveryService } from './skills/service';
+export interface AppDependencies {
+  webOrigin: string; projects: ProjectRepository; session(headers: IncomingHttpHeaders): Promise<SessionUser | null>;
+  authHandler?: RequestHandler;
+  analysis?: AnalysisService; uploads?: UploadService; internal?: RequestHandler;
+  githubConfigured?: boolean;
+  knownSecrets?: readonly string[];
+  deletion?: DeleteProjectService; blob?: RequestHandler;
+  profiles?: ProfileRepository;
+  recommendations?: RecommendationService;
+  configuration?: ConfigurationService;
+  discovery?: SkillDiscoveryService;
+}
+export function createApp(deps: AppDependencies) {
+  const app = express();
+  app.disable('x-powered-by');
+  app.use(helmet());
+  app.use((_req, res, next) => { res.setHeader('X-Request-Id', randomUUID()); res.setHeader('Cache-Control', 'no-store'); next(); });
+  app.all('/api/auth/{*splat}', deps.authHandler ?? ((_req, _res, next) => next(new AppError('AUTH_NOT_CONFIGURED', 503))));
+  app.use(express.json({ limit: '1mb', verify: (req, _res, bytes) => { recordBodySize(req, bytes.length); } }));
+  if (deps.blob) app.use(deps.blob);
+  if (deps.internal) app.use('/internal/v1', deps.internal);
+  app.use('/api', requireTrustedOrigin(deps.webOrigin));
+  app.use('/api', catalogRoutes());
+  app.get('/api/runtime', (_req, res) => { res.json({ githubConfigured: deps.githubConfigured ?? false, analysisConfigured: !!deps.analysis, skillDiscoveryConfigured: !!deps.discovery, uploadMode: deps.uploads ? 'configured' : 'unavailable' }); });
+  app.get('/api/me', async (req, res) => { const user = await deps.session(req.headers); if (!user) throw new AppError('AUTH_REQUIRED', 401); res.json(user); });
+  app.use('/api/projects', async (req, res, next) => {
+    const user = await deps.session(req.headers);
+    if (!user) throw new AppError('AUTH_REQUIRED', 401);
+    res.locals.user = user; next();
+  });
+  app.use('/api/projects', projectRoutes(new ProjectsService(deps.projects, deps.knownSecrets)));
+  if (deps.deletion) app.delete('/api/projects/:projectId', async (req, res) => { await deps.deletion!.deleteProject(res.locals.user.id, req.params.projectId, req.body); res.sendStatus(204); });
+  if (deps.uploads) app.use('/api/projects/:projectId', uploadRoutes(deps.uploads));
+  if (deps.analysis) app.use('/api/projects/:projectId', analysisRoutes(deps.analysis));
+  if (deps.profiles) app.use('/api/projects/:projectId', profileRoutes(deps.profiles));
+  if (deps.recommendations) app.use('/api/projects/:projectId', recommendationRoutes(deps.recommendations));
+  if (deps.configuration) app.use('/api/projects/:projectId', configurationRoutes(deps.configuration));
+  if (deps.discovery) app.use('/api/projects/:projectId', skillDiscoveryRoutes(deps.discovery));
+  app.use((_req, _res, next) => next(new AppError('NOT_FOUND', 404)));
+  app.use(errorHandler);
+  return app;
+}

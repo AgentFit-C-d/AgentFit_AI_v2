@@ -1,0 +1,21 @@
+import { expect, test } from 'vitest';
+import { configFixture } from '../support/configuration';
+import { checkSelection } from '../../apps/api/src/configuration/permissions';
+import { buildPreview } from '../../apps/api/src/configuration/preview';
+import { fingerprintPreview } from '../../apps/api/src/configuration/hash';
+import { zipFiles } from '../../apps/api/src/configuration/zip';
+import { unzipSync, strFromU8 } from '../../apps/api/node_modules/fflate';
+test('stable file ordering and exact Unicode bytes bind original, generated content and generator revision', () => {
+  const { input, recommendation, catalog } = configFixture(); const selection = checkSelection(recommendation, catalog, input); const now = new Date('2026-10-06');
+  const custom = { name: 'my-guide', description: '한글 규칙', instructions: '확인한다.\r\n이유를 설명한다.😀' };
+  const preview = buildPreview(input.expectedBasis, { ...input, customSkill: custom }, selection, now);
+  expect(preview.expiresAt).toBe(new Date(now.getTime() + 600000).toISOString());
+  expect(fingerprintPreview(preview.basis, { ...input, customSkill: custom }, [...preview.files].reverse(), preview.generatorVersion).fingerprint).toBe(preview.fingerprint);
+  expect(fingerprintPreview(preview.basis, input, preview.files, 'different').fingerprint).not.toBe(preview.fingerprint);
+  const changed = buildPreview(input.expectedBasis, { ...input, customSkill: { ...custom, instructions: custom.instructions + '가' } }, selection, now);
+  expect(changed.fingerprint).not.toBe(preview.fingerprint);
+  const customFile = preview.files.find(x => x.targetKey === 'custom-skill')!;
+  const updated = buildPreview(input.expectedBasis, { ...input, customSkill: custom, existingState: 'PROVIDED', existingFiles: [{ targetKey: customFile.targetKey, relativePath: customFile.relativePath, content: customFile.content }] }, selection, now);
+  expect(updated.fingerprint).not.toBe(preview.fingerprint);
+  const archive = unzipSync(zipFiles(preview.files)); for (const file of preview.files) expect(strFromU8(archive[file.relativePath]!)).toBe(file.content);
+});

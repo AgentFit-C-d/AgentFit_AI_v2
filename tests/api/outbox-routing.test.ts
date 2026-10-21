@@ -1,0 +1,23 @@
+import { expect, test, vi } from 'vitest';
+import { OutboxDispatcher } from '../../apps/api/src/analysis/outbox';
+import type { PrismaClient } from '../../apps/api/src/generated/prisma/client';
+import type { AnalysisWorker } from '../../apps/api/src/analysis/worker';
+import type { AttemptRepository } from '../../apps/api/src/analysis/ports';
+import type { CleanupService } from '../../apps/api/src/storage/cleanup';
+test('purge/delete dispatch to retention handlers; missing handler is not completed; replay does nothing', async () => {
+  let kind = 'purge'; let completedAt: Date | null = null;
+  const findUnique = vi.fn(async () => ({ id: 'job', targetId: 'target', kind, dueAt: new Date(0), completedAt }));
+  const updateMany = vi.fn(async () => { completedAt = new Date(); return { count: 1 }; });
+  const db = { jobOutbox: { findUnique, updateMany } } as unknown as PrismaClient;
+  const cleanupUpload = vi.fn(async () => true); const purge = vi.fn(async () => {}); const deletion = vi.fn(async () => {});
+  const missing = new OutboxDispatcher(db, { publish: async () => {} }, {} as AnalysisWorker, {} as AttemptRepository, { cleanupUpload } as unknown as CleanupService);
+  await expect(missing.process({ outboxId: 'job', targetId: 'target', kind: 'purge' })).rejects.toMatchObject({ code: 'RETENTION_NOT_CONFIGURED' });
+  expect(updateMany).not.toHaveBeenCalled();
+  const dispatcher = new OutboxDispatcher(db, { publish: async () => {} }, {} as AnalysisWorker, {} as AttemptRepository, { cleanupUpload } as unknown as CleanupService, Date.now, { purge, deletion });
+  await dispatcher.process({ outboxId: 'job', targetId: 'target', kind: 'purge' });
+  await dispatcher.process({ outboxId: 'job', targetId: 'target', kind: 'purge' });
+  expect(purge).toHaveBeenCalledTimes(1); expect(cleanupUpload).not.toHaveBeenCalled();
+  kind = 'delete'; completedAt = null;
+  await dispatcher.process({ outboxId: 'job', targetId: 'target', kind: 'delete' });
+  expect(deletion).toHaveBeenCalledWith('target');
+});

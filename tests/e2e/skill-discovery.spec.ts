@@ -1,0 +1,24 @@
+import { expect, test } from '@playwright/test';
+import { emptyProfile } from '../../packages/contracts/src';
+import { createRequire } from 'node:module';
+const { unzipSync, strFromU8 } = createRequire(import.meta.url)('../../apps/api/node_modules/fflate') as typeof import('../../apps/api/node_modules/fflate');
+test.beforeEach(async ({ context }) => { await context.addCookies([{ name: 'better-auth.session_token', value: process.env.E2E_SESSION_COOKIE!, url: 'http://localhost:3011' }]); });
+test('a70-point optional discovery follows real queue → explicit selection → preview → approved ZIP', async ({ page }) => {
+  const headers = { Origin: 'http://localhost:3011' };
+  const value = await (await page.request.post('/api/projects', { headers, data: { name: '동적 스킬 브라우저 검증' } })).json(); const path = `/api/projects/${value.id}`;
+  expect((await page.request.patch(path + '/profile', { headers, data: { expectedVersion: 1, profile: { ...emptyProfile(), frontend: ['React'], backend: ['Node.js'], features: ['결제 승인', '중복 주문 방지'] } } })).status()).toBe(200);
+  expect((await page.request.put(path + '/developer-profile', { headers, data: { expectedVersion: 0, data: { role: 'FULL_STACK', responsibilities: [], experienceLevel: null } } })).status()).toBe(201);
+  expect((await page.request.put(path + '/environment-profile', { headers, data: { expectedVersion: 0, data: { os: { family: 'WINDOWS', version: '11' }, client: { id: 'codex-desktop', version: null }, runtimes: [], installedComponents: [], configurationKnowledge: 'USER_SAYS_EMPTY', authenticationReadiness: [] } } })).status()).toBe(201);
+  await page.goto('/projects/' + value.id); await page.getByRole('button', { name: '도구 추천 받기' }).click();
+  await expect(page.getByText(/추천 근거는 패키지 검사 범위입니다/)).toBeVisible();
+  await expect(page.getByText('프로젝트 적합도 70점 · 추가 선택 후보 · 추천 기준 75점')).toBeVisible();
+  await expect(page.getByText('결제 승인·중복 주문 검증에 필요한 지침입니다. 해당 기능을 개발할 때 선택할 수 있는 지침입니다.')).toBeVisible();
+  const selected = page.getByRole('checkbox', { name: 'synthetic/payment 라이브러리 선택' }); await expect(selected).not.toBeChecked(); await selected.check();
+  await page.getByRole('button', { name: '설정 미리보기 만들기' }).click(); await expect(page.getByText(/새 후보는 출처·파일·라이선스/)).toBeVisible();
+  await page.getByRole('checkbox', { name: '표시된 파일과 확인 범위를 검토했고 이 내용의 생성을 승인합니다.' }).check();
+  const downloadPromise = page.waitForEvent('download'); await page.getByRole('button', { name: '최종 승인하고 ZIP 다운로드' }).click();
+  const download = await downloadPromise; const stream = await download.createReadStream(); if (!stream) throw new Error('DOWNLOAD_MISSING');
+  const chunks: Buffer[] = []; for await (const chunk of stream) chunks.push(Buffer.from(chunk));
+  const files = unzipSync(Buffer.concat(chunks)); expect(Object.keys(files).sort()).toEqual(['AGENTFIT-APPLY.md', 'AGENTFIT-SOURCES.md']); expect(strFromU8(files['AGENTFIT-APPLY.md']!)).toContain('https://github.com/synthetic/payment#readme');
+  await page.reload(); await expect(page.getByRole('checkbox', { name: 'synthetic/payment 라이브러리 선택' })).toBeEnabled();
+});
