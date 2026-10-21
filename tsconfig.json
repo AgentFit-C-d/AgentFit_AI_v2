@@ -1,0 +1,6 @@
+{
+  "extends": "./tsconfig.base.json",
+  "compilerOptions": { "noEmit": true },
+  "include": ["packages/**/*.ts", "apps/api/src/**/*.ts", "apps/api/api/**/*.ts", "tools/**/*.ts", "tests/**/*.ts", "tests/**/*.tsx", "vitest.config.ts", "playwright.config.ts"],
+  "exclude": ["node_modules", "apps/api/src/generated"]
+}

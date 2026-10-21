@@ -1,3 +1,7 @@
+> 현재 브랜치: **frontend**. 기존 AI main을 기반으로 frontend 작업을 추가했습니다.
+> 이 브랜치의 실행·검증·포함 범위는 [frontend 안내](docs/frontend.md)를 먼저 확인하세요.
+> 아래 본문은 기반 main의 AI 서버 안내입니다.
+
 # AgentFit AI v2
 
 AgentFit의 Python/FastAPI AI 서버입니다. 기존 프로젝트에서 AI 담당 코드와 테스트, 합성 평가 데이터, 필수 공통 JSON 계약만 분리했습니다. 원래 경로를 유지하므로 `apps/ai`가 Python 프로젝트 루트입니다.

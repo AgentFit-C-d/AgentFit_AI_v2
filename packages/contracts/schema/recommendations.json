@@ -1,0 +1,623 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://agentfit.local/schema/recommendations.json",
+  "definitions": {
+    "developer": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "role",
+        "responsibilities",
+        "experienceLevel"
+      ],
+      "properties": {
+        "role": {
+          "anyOf": [
+            {
+              "type": "string",
+              "enum": [
+                "FRONTEND",
+                "BACKEND",
+                "FULL_STACK",
+                "AI",
+                "DESIGNER"
+              ]
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "responsibilities": {
+          "anyOf": [
+            {
+              "type": "array",
+              "maxItems": 30,
+              "items": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 200
+              }
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "experienceLevel": {
+          "anyOf": [
+            {
+              "type": "string",
+              "enum": [
+                "BEGINNER",
+                "INTERMEDIATE",
+                "EXPERIENCED"
+              ]
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      }
+    },
+    "environment": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "os",
+        "client",
+        "runtimes",
+        "installedComponents",
+        "configurationKnowledge",
+        "authenticationReadiness"
+      ],
+      "properties": {
+        "os": {
+          "anyOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "family",
+                "version"
+              ],
+              "properties": {
+                "family": {
+                  "type": "string",
+                  "enum": [
+                    "WINDOWS",
+                    "MACOS",
+                    "LINUX",
+                    "OTHER"
+                  ]
+                },
+                "version": {
+                  "anyOf": [
+                    {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 200
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                }
+              }
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "client": {
+          "anyOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "id",
+                "version"
+              ],
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 200
+                },
+                "version": {
+                  "anyOf": [
+                    {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 200
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                }
+              }
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "runtimes": {
+          "anyOf": [
+            {
+              "type": "array",
+              "maxItems": 30,
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "name",
+                  "version"
+                ],
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 200
+                  },
+                  "version": {
+                    "anyOf": [
+                      {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 200
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  }
+                }
+              }
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "installedComponents": {
+          "anyOf": [
+            {
+              "type": "array",
+              "maxItems": 30,
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "catalogItemId",
+                  "name",
+                  "version"
+                ],
+                "properties": {
+                  "catalogItemId": {
+                    "anyOf": [
+                      {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 200
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "name": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 200
+                  },
+                  "version": {
+                    "anyOf": [
+                      {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 200
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  }
+                }
+              }
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "configurationKnowledge": {
+          "type": "string",
+          "enum": [
+            "UNKNOWN",
+            "USER_SAYS_EMPTY",
+            "HAS_EXISTING"
+          ]
+        },
+        "authenticationReadiness": {
+          "anyOf": [
+            {
+              "type": "array",
+              "maxItems": 30,
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "serviceId",
+                  "state"
+                ],
+                "properties": {
+                  "serviceId": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 200
+                  },
+                  "state": {
+                    "type": "string",
+                    "enum": [
+                      "READY",
+                      "NOT_READY",
+                      "UNKNOWN"
+                    ]
+                  }
+                }
+              }
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      }
+    },
+    "developerPatch": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "expectedVersion",
+        "data"
+      ],
+      "properties": {
+        "expectedVersion": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 2147483646
+        },
+        "data": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "role",
+            "responsibilities",
+            "experienceLevel"
+          ],
+          "properties": {
+            "role": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "enum": [
+                    "FRONTEND",
+                    "BACKEND",
+                    "FULL_STACK",
+                    "AI",
+                    "DESIGNER"
+                  ]
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "responsibilities": {
+              "anyOf": [
+                {
+                  "type": "array",
+                  "maxItems": 30,
+                  "items": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 200
+                  }
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "experienceLevel": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "enum": [
+                    "BEGINNER",
+                    "INTERMEDIATE",
+                    "EXPERIENCED"
+                  ]
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            }
+          }
+        }
+      }
+    },
+    "environmentPatch": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "expectedVersion",
+        "data"
+      ],
+      "properties": {
+        "expectedVersion": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 2147483646
+        },
+        "data": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "os",
+            "client",
+            "runtimes",
+            "installedComponents",
+            "configurationKnowledge",
+            "authenticationReadiness"
+          ],
+          "properties": {
+            "os": {
+              "anyOf": [
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "family",
+                    "version"
+                  ],
+                  "properties": {
+                    "family": {
+                      "type": "string",
+                      "enum": [
+                        "WINDOWS",
+                        "MACOS",
+                        "LINUX",
+                        "OTHER"
+                      ]
+                    },
+                    "version": {
+                      "anyOf": [
+                        {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 200
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    }
+                  }
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "client": {
+              "anyOf": [
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "id",
+                    "version"
+                  ],
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 200
+                    },
+                    "version": {
+                      "anyOf": [
+                        {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 200
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    }
+                  }
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "runtimes": {
+              "anyOf": [
+                {
+                  "type": "array",
+                  "maxItems": 30,
+                  "items": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "name",
+                      "version"
+                    ],
+                    "properties": {
+                      "name": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 200
+                      },
+                      "version": {
+                        "anyOf": [
+                          {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 200
+                          },
+                          {
+                            "type": "null"
+                          }
+                        ]
+                      }
+                    }
+                  }
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "installedComponents": {
+              "anyOf": [
+                {
+                  "type": "array",
+                  "maxItems": 30,
+                  "items": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "catalogItemId",
+                      "name",
+                      "version"
+                    ],
+                    "properties": {
+                      "catalogItemId": {
+                        "anyOf": [
+                          {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 200
+                          },
+                          {
+                            "type": "null"
+                          }
+                        ]
+                      },
+                      "name": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 200
+                      },
+                      "version": {
+                        "anyOf": [
+                          {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 200
+                          },
+                          {
+                            "type": "null"
+                          }
+                        ]
+                      }
+                    }
+                  }
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "configurationKnowledge": {
+              "type": "string",
+              "enum": [
+                "UNKNOWN",
+                "USER_SAYS_EMPTY",
+                "HAS_EXISTING"
+              ]
+            },
+            "authenticationReadiness": {
+              "anyOf": [
+                {
+                  "type": "array",
+                  "maxItems": 30,
+                  "items": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "serviceId",
+                      "state"
+                    ],
+                    "properties": {
+                      "serviceId": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 200
+                      },
+                      "state": {
+                        "type": "string",
+                        "enum": [
+                          "READY",
+                          "NOT_READY",
+                          "UNKNOWN"
+                        ]
+                      }
+                    }
+                  }
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            }
+          }
+        }
+      }
+    },
+    "recommendationInput": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "expectedVersions"
+      ],
+      "properties": {
+        "expectedVersions": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "project",
+            "developer",
+            "environment"
+          ],
+          "properties": {
+            "project": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 2147483646
+            },
+            "developer": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 2147483646
+            },
+            "environment": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 2147483646
+            }
+          }
+        }
+      }
+    }
+  }
+}

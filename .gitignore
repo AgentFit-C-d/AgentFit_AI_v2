@@ -25,3 +25,16 @@ tmp/
 *.log
 .DS_Store
 Thumbs.db
+
+# Node application dependencies and generated/local output
+node_modules/
+.pnpm-store/
+.next/
+.next-e2e/
+dist/
+*.tsbuildinfo
+**/next-env.d.ts
+apps/api/src/generated/
+playwright-report/
+test-results/
+output/

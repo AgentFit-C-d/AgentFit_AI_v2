@@ -1,0 +1,21 @@
+{
+  "id": "prisma-prisma-database-setup",
+  "name": "prisma-database-setup",
+  "repository": "prisma/skills",
+  "commit": "be16a8740d01363d13552b317042431ee8dfc581",
+  "sourcePath": "prisma-database-setup",
+  "license": "MIT",
+  "licenseEvidence": "REPOSITORY_LICENSE",
+  "files": [
+    {
+      "path": "SKILL.md",
+      "content": "---\nname: prisma-database-setup\ndescription: Deprecated compatibility name for prisma-orm-setup. Use only when a user or existing integration explicitly invokes prisma-database-setup; otherwise select prisma-orm-setup.\nlicense: MIT\nmetadata:\n  author: prisma\n  version: \"8.0.0\"\n---\n\n# Deprecated: prisma-database-setup\n\nLoad `prisma-orm-setup` with the host's skill loader or read its installed `SKILL.md`. If unavailable, install it from [prisma/skills](https://github.com/prisma/skills/tree/main/prisma-orm-setup) before continuing. It covers Prisma 6, 7, and 8 setup and connection repair.\n\nThis compatibility entry contains no setup recipes. Keep it until consumers have migrated to the replacement.\n",
+      "sha256": "f1f95a5f596ad4260649a20e56cf77f1d24222b56ba6f7b12b24ec6e5ac39477"
+    },
+    {
+      "path": "LICENSE.txt",
+      "content": "MIT License\n\nCopyright (c) 2025 Prisma\n\nPermission is hereby granted, free of charge, to any person obtaining a copy\nof this software and associated documentation files (the \"Software\"), to deal\nin the Software without restriction, including without limitation the rights\nto use, copy, modify, merge, publish, distribute, sublicense, and/or sell\ncopies of the Software, and to permit persons to whom the Software is\nfurnished to do so, subject to the following conditions:\n\nThe above copyright notice and this permission notice shall be included in all\ncopies or substantial portions of the Software.\n\nTHE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR\nIMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,\nFITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE\nAUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER\nLIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,\nOUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE\nSOFTWARE.\n",
+      "sha256": "03b4d243884e832289d7306e3bcc725ce5095834cc91e0be2b46f178eaafd973"
+    }
+  ]
+}
